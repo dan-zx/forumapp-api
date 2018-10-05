@@ -1,0 +1,21 @@
+# Generated files
+target/
+build/
+bin/
+.gradle/
+*.class
+dist/
+out/
+
+# Eclipse project files
+.classpath
+.project
+.settings/
+test-output/
+
+# Idea project files
+.idea/
+/*.iml
+
+# macOS files
+.DS_Store
