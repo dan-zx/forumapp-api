@@ -23,7 +23,9 @@ repositories {
 }
 
 ext {
+    cloningVersion = '1.9.10'
     groovyVersion  = '2.5.1'
+    gsonVersion    = '2.8.5'
     swaggerVersion = '2.9.2'
 }
 
@@ -31,6 +33,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile "io.springfox:springfox-swagger2:$swaggerVersion"
     compile "io.springfox:springfox-swagger-ui:$swaggerVersion"
+    compile "com.google.code.gson:gson:$gsonVersion"
+    compile "uk.com.robust-it:cloning:$cloningVersion"
     runtime "org.codehaus.groovy:groovy:$groovyVersion"
 }
 
