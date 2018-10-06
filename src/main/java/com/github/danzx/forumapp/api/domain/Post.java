@@ -17,19 +17,36 @@ package com.github.danzx.forumapp.api.domain;
 
 import java.util.Collection;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Post entity.
  *
  * @author Daniel Pedraza-Arcega
  */
+@ApiModel("Post")
 public class Post extends BaseEntity {
 
+    @ApiModelProperty("The ID of the user who created this post")
     private Integer userId;
+
+    @ApiModelProperty("The title of this post")
     private String title;
+
+    @ApiModelProperty("The body of this post")
     private String body;
+
+    @ApiModelProperty("The user full name")
     private String userFullName;
+
+    @ApiModelProperty("The user who created this post, can be null")
     private User user;
+
+    @ApiModelProperty("The number of comments this post has")
     private Integer numOfComments;
+
+    @ApiModelProperty("All comments this post has, can be null")
     private Collection<Comment> comments;
 
     public Integer getUserId() {

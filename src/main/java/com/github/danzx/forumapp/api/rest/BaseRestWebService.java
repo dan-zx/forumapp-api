@@ -19,8 +19,6 @@ import com.github.danzx.forumapp.api.dao.CommentDao;
 import com.github.danzx.forumapp.api.dao.PostDao;
 import com.github.danzx.forumapp.api.dao.UserDao;
 
-import com.google.gson.JsonObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

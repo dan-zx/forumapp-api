@@ -15,18 +15,33 @@
  */
 package com.github.danzx.forumapp.api.domain;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Comment entity.
  *
  * @author Daniel Pedraza-Arcega
  */
+@ApiModel("Post comment")
 public class Comment extends BaseEntity {
 
+    @ApiModelProperty("The ID of the post this comment belongs")
     private Integer postId;
+
+    @ApiModelProperty("The name of this comment")
     private String name;
+
+    @ApiModelProperty(value = "The email of the user who created this comment", example = "Peter_Petrelli@primatechpaper.co")
     private String email;
+
+    @ApiModelProperty("The body of this comment")
     private String body;
+
+    @ApiModelProperty("The post this comment belongs, can be null")
     private Post post;
+
+    @ApiModelProperty("The user who created this comment, can be null")
     private User user;
 
     public Integer getPostId() {

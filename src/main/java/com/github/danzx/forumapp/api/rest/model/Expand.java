@@ -13,19 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.forumapp.api.rest;
+package com.github.danzx.forumapp.api.rest.model;
 
 import com.github.danzx.forumapp.api.util.BitFlag;
 
+/**
+ * Expand bif flag.
+ * values:
+ * <ul>
+ *     <li>{@code "user" -> 0b0100}</li>
+ *     <li>{@code "post" -> 0b1000}</li>
+ *     <li>{@code "user"|"post" -> 0b1100}</li>
+ *     <li>{@code others -> 0b0000}</li>
+ * </ul>
+ *
+ * @author Daniel Pedraza-Arcega
+ */
 public class Expand implements BitFlag {
 
     private static final String USER_STR = "user";
     private static final String POST_STR = "post";
 
-    static final int EXPAND_NOTHING = 0b0000;
-    static final int EXPAND_USER = 0b0100;
-    static final int EXPAND_POST = 0b1000;
-    static final int EXPAND_ALL = EXPAND_USER|EXPAND_POST;
+    public static final int EXPAND_NOTHING = 0b0000;
+    public static final int EXPAND_USER = 0b0100;
+    public static final int EXPAND_POST = 0b1000;
+    public static final int EXPAND_ALL = EXPAND_USER|EXPAND_POST;
 
     private final int value;
 

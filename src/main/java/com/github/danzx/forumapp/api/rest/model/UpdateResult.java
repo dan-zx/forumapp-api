@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.forumapp.api.rest;
+package com.github.danzx.forumapp.api.rest.model;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * Result of an update.
  *
  * @author Daniel Pedraza-Arcega
  */
+@ApiModel("Result of an update")
 public class UpdateResult {
 
-    static final UpdateResult SUCCESSFUL;
-    static final UpdateResult FAILURE;
+    public static final UpdateResult SUCCESSFUL;
+    public static final UpdateResult FAILURE;
 
     static {
         SUCCESSFUL = new UpdateResult();
@@ -32,6 +36,7 @@ public class UpdateResult {
         FAILURE.successful = false;
     }
 
+    @ApiModelProperty("Whether the update was successful or not")
     private boolean successful;
 
     public boolean getSuccessful() {

@@ -15,9 +15,9 @@
  */
 package com.github.danzx.forumapp.api.rest;
 
-import static com.github.danzx.forumapp.api.rest.Expand.EXPAND_ALL;
-import static com.github.danzx.forumapp.api.rest.Expand.EXPAND_POST;
-import static com.github.danzx.forumapp.api.rest.Expand.EXPAND_USER;
+import static com.github.danzx.forumapp.api.rest.model.Expand.EXPAND_ALL;
+import static com.github.danzx.forumapp.api.rest.model.Expand.EXPAND_POST;
+import static com.github.danzx.forumapp.api.rest.model.Expand.EXPAND_USER;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -26,12 +26,14 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.danzx.forumapp.api.domain.Comment;
+import com.github.danzx.forumapp.api.rest.model.CommentsCount;
+import com.github.danzx.forumapp.api.rest.model.Expand;
+import com.github.danzx.forumapp.api.rest.model.UpdateResult;
 import com.github.danzx.forumapp.api.util.BitFlag;
-
-import com.google.gson.JsonObject;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,9 +46,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Comment REST rest.
- * Location: ../[ApplicatonPath]/comments/..
- * 
+ * Comments REST controller.
+ *
  * @author Daniel Pedraza-Arcega
  */
 @RestController
@@ -55,18 +56,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentRestWebService extends BaseRestWebService {
 
     /**
-     * GET ../
-     * Content-Type: "application/json"
+     * Finds all comments.
      *
-     * @param postId only for this post.
-     * @param expands user|post.
-     * @return a JSON array.
+     * @param postId the comments for this post.
+     * @param expands indicates if each comment will have the user that created the comment and/or post in which the
+     *                comment is located.
+     * @return all comments.
      */
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Finds all comments.")
+    @ApiOperation(value = "Finds all comments")
     public Collection<Comment> findAll(
-            @RequestParam(name = "postId", required = false) Integer postId,
-            @RequestParam(name = "_expand", required = false, defaultValue = "") List<Expand> expands) {
+            @ApiParam("the comments for this post") @RequestParam(name = "postId", required = false) Integer postId,
+            @ApiParam(value = "indicates if each comment will have the user that created the comment and/or post in which the comment is located", allowableValues = "user,post") @RequestParam(name = "_expand", required = false, defaultValue = "") List<Expand> expands) {
         Collection<Comment> comments = postId != null ? getCommentDao().findByPostId(postId) : getCommentDao().findAll();
         if (!comments.isEmpty()) {
             int flag = BitFlag.getFlags(expands);
@@ -91,18 +92,18 @@ public class CommentRestWebService extends BaseRestWebService {
     }
 
     /**
-     * GET ../{id}?postId={postId}
-     * Content-Type: "application/json"
+     * Finds a comment by its id.
      * 
      * @param id the comment id.
-     * @param expands user|post.
+     * @param expands indicates if this comment will have the user that created the comment and/or post in which the
+     *                comment is located.
      * @return a JSON of the comment.
      */
     @GetMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Finds a comment by its id.")
+    @ApiOperation(value = "Finds a comment by its id")
     public Comment findById(
-            @PathVariable("id") int id,
-            @RequestParam(name = "_expand", required = false, defaultValue = "") List<Expand> expands) {
+            @ApiParam(value = "the comment id", required = true) @PathVariable("id") int id,
+            @ApiParam(value = "indicates if this comment will have the user that created the comment and/or post in which the comment is located", allowableValues = "user,post") @RequestParam(name = "_expand", required = false, defaultValue = "") List<Expand> expands) {
         Optional<Comment> comment = Optional.ofNullable(getCommentDao().findById(id));
         comment.ifPresent(c -> {
             int flag = BitFlag.getFlags(expands);
@@ -125,48 +126,45 @@ public class CommentRestWebService extends BaseRestWebService {
     }
 
     /**
-     * GET ../
-     * Content-Type: "application/json"
+     * Finds the count of comments for the given post and user
      * 
      * @param postId the post id.
      * @param email the user email.
-     * @return a JSON of count.
+     * @return the count of comments.
      */
     @GetMapping(path = "/count", produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Finds the count of comments for the given post and user")
-    public String countByPostIdAndUserEmail(
-            @RequestParam("postId") int postId,
-            @RequestParam("email") String email) {
-        JsonObject json = new JsonObject();
-        json.addProperty("numOfComments", getCommentDao().countByPostIdAndUserEmail(postId, email));
-        return json.toString();
+    public CommentsCount countByPostIdAndUserEmail(
+            @ApiParam(value = "the post id", required = true) @RequestParam("postId") int postId,
+            @ApiParam(value = "the user email", required = true, example = "Matt_Parkman@primatechpaper.co") @RequestParam("email") String email) {
+        return new CommentsCount(getCommentDao().countByPostIdAndUserEmail(postId, email));
     }
 
     /**
-     * POST ../
-     * Content-Type: "application/json"
+     * Creates a new comment
      * 
-     * @param comment a JSON of the comment save.
-     * @return a JSON of the comment.
+     * @param comment the new comment.
+     * @return the new comment.
      */
     @PostMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Creates a new comment")
-    public Comment add(@RequestBody Comment comment) {
+    public Comment add(@ApiParam(value = "Comment payload", required = true) @RequestBody Comment comment) {
         getCommentDao().save(comment);
         return comment;
     }
 
     /**
-     * PUT ../
-     * Content-Type: "application/json"
+     * Replaces the comment with the given id with the submitted comment.
      *
-     * @param id the comment id.
-     * @param comment a JSON of the comment update.
-     * @return a JSON of the post.
+     * @param id the id of the comment to replace.
+     * @param comment the comment.
+     * @return the new comment.
      */
     @PutMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Updates a comment")
-    public Comment update(@PathVariable("id") int id, @RequestBody Comment comment) {
+    public Comment update(
+            @ApiParam(value = "the comment id", required = true) @PathVariable("id") int id,
+            @ApiParam(value = "Comment payload", required = true) @RequestBody Comment comment) {
         if (comment.getId() == null) {
             Comment oldComment = getCommentDao().findById(id);
             if (comment.getName() != null) oldComment.setName(comment.getName());
@@ -182,15 +180,14 @@ public class CommentRestWebService extends BaseRestWebService {
     }
 
     /**
-     * DELETE ../{id}
-     * Content-Type: "application/json"
-     * 
+     * Deletes a comment.
+     *
      * @param id the id of the comment to delete.
-     * @return a JSON object indicating if the operation was successful.
+     * @return {@link UpdateResult#SUCCESSFUL} if successful.
      */
     @DeleteMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Deletes a comment")
-    public UpdateResult delete(@PathVariable("id") int id) {
+    public UpdateResult delete(@ApiParam(value = "the comment id", required = true) @PathVariable("id") int id) {
         getCommentDao().delete(id);
         return UpdateResult.SUCCESSFUL;
     }

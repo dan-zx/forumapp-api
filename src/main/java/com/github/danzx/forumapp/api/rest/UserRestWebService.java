@@ -15,9 +15,9 @@
  */
 package com.github.danzx.forumapp.api.rest;
 
-import static com.github.danzx.forumapp.api.rest.Embed.EMBED_ALL;
-import static com.github.danzx.forumapp.api.rest.Embed.EMBED_COMMENTS;
-import static com.github.danzx.forumapp.api.rest.Embed.EMBED_POSTS;
+import static com.github.danzx.forumapp.api.rest.model.Embed.EMBED_ALL;
+import static com.github.danzx.forumapp.api.rest.model.Embed.EMBED_COMMENTS;
+import static com.github.danzx.forumapp.api.rest.model.Embed.EMBED_POSTS;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -26,10 +26,12 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.danzx.forumapp.api.domain.User;
+import com.github.danzx.forumapp.api.rest.model.Embed;
 import com.github.danzx.forumapp.api.util.BitFlag;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,8 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Comment REST rest.
- * Location: ../[ApplicatonPath]/users/..
+ * Users REST controller.
  * 
  * @author Daniel Pedraza-Arcega
  */
@@ -48,10 +49,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(description = "Operations for users", tags = { "Users" })
 public class UserRestWebService extends BaseRestWebService {
 
+    /**
+     * Finds all users.
+     *
+     * @param embeds indicates if each user will have embedded its posts and/or comments.
+     * @return all users.
+     */
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Finds all users.")
+    @ApiOperation(value = "Finds all users")
     public Collection<User> findAll(
-            @RequestParam(name = "_embed", required = false, defaultValue = "") List<Embed> embeds) {
+            @ApiParam(value = "indicates if each user will have embedded its posts and/or comments", allowableValues = "posts,comments") @RequestParam(name = "_embed", required = false, defaultValue = "") List<Embed> embeds) {
         Collection<User> users = getUserDao().findAll();
         if (!users.isEmpty()) {
             int flags = BitFlag.getFlags(embeds);
@@ -86,18 +93,17 @@ public class UserRestWebService extends BaseRestWebService {
     }
 
     /**
-     * GET ../{id}
-     * Content-Type: "application/json"
+     * Finds a user by its id.
      * 
      * @param id the user id.
-     * @param embeds posts|comments.
-     * @return a JSON object of the user.
+     * @param embeds indicates if the user will have embedded its posts and/or comments.
+     * @return the user or null.
      */
     @GetMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Finds a user by its id.")
+    @ApiOperation(value = "Finds a user by its id")
     public User findById(
-            @PathVariable("id") int id,
-            @RequestParam(name = "_embed", required = false, defaultValue = "") List<Embed> embeds) {
+            @ApiParam(value = "The user id", required = true) @PathVariable("id") int id,
+            @ApiParam(value = "indicates if the user will have embedded its posts and/or comments", allowableValues = "posts,comments") @RequestParam(name = "_embed", required = false, defaultValue = "") List<Embed> embeds) {
         Optional<User> user = Optional.ofNullable(getUserDao().findById(id));
         user.ifPresent(u -> {
             int flags = BitFlag.getFlags(embeds);

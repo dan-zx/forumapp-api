@@ -13,25 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.danzx.forumapp.api.domain;
-
-import io.swagger.annotations.ApiModelProperty;
-
-/**
- * Base entity class.
- *
- * @author Daniel Pedraza-Arcega
- */
-public abstract class BaseEntity {
-
-    @ApiModelProperty("The identifier")
-    private Integer id;
-    
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-}
+/** Application configuration. */
+package com.github.danzx.forumapp.api.config;
